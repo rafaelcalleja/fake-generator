@@ -1,0 +1,39 @@
+{
+    "name": "rc/fake-generator",
+    "type": "library",
+    "description": "Simple Library for text generation",
+    "homepage": "https://github.com/rafaelcalleja/fake-generator",
+    "keywords": ["faker-generator"],
+    "license": "MIT",
+    "authors": [
+      {
+        "name": "Rafael Calleja",
+        "email": "rafaelcalleja@gmail.com",
+        "homepage": "https://github.com/rafaelcalleja"
+      }
+    ],
+    "require": {
+      "fzaninotto/faker": "dev-master"
+    },
+    "require-dev": {
+      "phpunit/phpunit": "~4.0"
+    },
+    "autoload": {
+        "psr-4": {
+	        "FakeGenerator\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "FakeGenerator\\Tests\\": "tests/FakeGenerator"
+        }
+    },
+    "config": {
+     "platform": {
+      "php": "5.5.9"
+     }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+
+}
