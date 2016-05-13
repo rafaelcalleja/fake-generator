@@ -63,6 +63,20 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(strlen($actual), strlen($append) + strlen($append) + $length);
     }
 
+    /** @dataProvider regexProvider*/
+    public function testCustomRegex($regex)
+    {
+        $length = 1;
+        $generator = new Generator('(', $length, null, $regex);
+
+        $actual = (string) $generator;
+
+        $this->assertSame($length, $generator->length());
+
+        $split = preg_split(sprintf('/%s/', $regex), $actual, -1, PREG_SPLIT_OFFSET_CAPTURE);
+        $this->assertCount(2, $split);
+    }
+
     /**
      * @dataProvider exceptionProvider
      * @expectedException \InvalidArgumentException
@@ -70,6 +84,20 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     public function testInvalidLenght($prefix, $length)
     {
         $generator = new Generator($prefix, $length);
+    }
+
+    public function regexProvider()
+    {
+        return array(
+            array('[0-9]'),
+            array('[0-1]'),
+            array('[A-Z]'),
+            array('[a-z]'),
+            array('[a-b]'),
+            array('[B-C]'),
+            array('[-+]'),
+            array('[)]'),
+        );
     }
 
     public function prefixProvider()

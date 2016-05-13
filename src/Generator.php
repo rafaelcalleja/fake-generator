@@ -32,7 +32,9 @@ class Generator
 
     private $faker;
 
-    public function __construct($prefix, $length, $sufix = null)
+    private $pattern;
+
+    public function __construct($prefix, $length, $sufix = null, $pattern = '[A-Za-z0-9._%+-]')
     {
         $this->faker = new \Faker\Generator();
         $this->faker->addProvider(new \Faker\Provider\Base($this->faker));
@@ -40,6 +42,7 @@ class Generator
         $this->setPrefix($prefix);
         $this->setLength($length);
         $this->setSufix($sufix);
+        $this->setPattern($pattern);
 
         $this->buildValue();
     }
@@ -104,9 +107,17 @@ class Generator
         $this->length = $value;
     }
 
+    /**
+     * @param $value
+     */
+    private function setPattern($value)
+    {
+        $this->pattern = $value;
+    }
+
     private function buildValue()
     {
-        $this->value = sprintf('%s%s%s', $this->prefix(), $this->faker->regexify('[A-Za-z0-9._%+-]{'.$this->length().'}'), $this->sufix());
+        $this->value = sprintf('%s%s%s', $this->prefix(), $this->faker->regexify($this->pattern.'{'.$this->length().'}'), $this->sufix());
 
         if ($this->value == $this->prefix()) {
             throw new \InvalidArgumentException(sprintf('legnth must be >= 1 current (%s)', $this->length()));
