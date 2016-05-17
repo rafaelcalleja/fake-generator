@@ -47,4 +47,12 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
         return $method->getClosure($object);
     }
+
+    public function setPropertyValue(&$object, $property, $value)
+    {
+        $reflection   = new \ReflectionObject($object);
+        $property = $reflection->getProperty($property);
+        $property->setAccessible(true);
+        $property->setValue($object, $value);
+    }
 }

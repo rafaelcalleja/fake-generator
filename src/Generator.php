@@ -28,16 +28,37 @@ class Generator
      */
     protected $sufix;
 
+    /**
+     * @var int
+     */
+    protected $max;
+
+    /**
+     * @var string
+     */
     private $value;
 
+    /**
+     * @var \Faker\Generator
+     */
     private $faker;
 
+    /**
+     * @var string
+     */
     private $pattern;
+
+    /**
+     * @var \FormalTheory_RegularExpression_Lexer
+     */
+    private $lexer;
 
     public function __construct($prefix, $length, $sufix = null, $pattern = '[A-Za-z0-9._%+-]')
     {
         $this->faker = new \Faker\Generator();
         $this->faker->addProvider(new \Faker\Provider\Base($this->faker));
+
+        $this->lexer = new \FormalTheory_RegularExpression_Lexer();
 
         $this->setPrefix($prefix);
         $this->setLength($length);
@@ -72,11 +93,50 @@ class Generator
     }
 
     /**
+     * @return int
+     */
+    public function max()
+    {
+        return $this->max;
+    }
+
+    public function pattern()
+    {
+        return $this->pattern;
+    }
+
+    /**
      * @return string
      */
     public function __toString()
     {
         return (string) $this->value;
+    }
+
+    public function equals(Generator $object)
+    {
+        return $this->prefix() == $object->prefix() &&
+               $this->sufix() == $object->sufix() &&
+               $this->length() == $object->length() &&
+               $this->pattern() == $object->pattern() &&
+               $this->value == $object->value &&
+               $this->max() == $object->max()
+             ;
+    }
+
+    public function next()
+    {
+        if ($this->max() <= 1) {
+            throw new \RuntimeException('no more elements');
+        }
+
+        while (true) {
+            $new = new self($this->prefix(), $this->length(), $this->sufix(), $this->pattern);
+
+            if (!$new->equals($this)) {
+                return $new;
+            }
+        }
     }
 
     /**
@@ -117,10 +177,21 @@ class Generator
 
     private function buildValue()
     {
-        $this->value = sprintf('%s%s%s', $this->prefix(), $this->faker->regexify($this->pattern.'{'.$this->length().'}'), $this->sufix());
+        $pattern = $this->pattern.'{'.$this->length().'}';
+
+        $this->value = sprintf('%s%s%s',  $this->prefix(), $this->faker->regexify($pattern), $this->sufix());
 
         if ($this->value == $this->prefix()) {
             throw new \InvalidArgumentException(sprintf('legnth must be >= 1 current (%s)', $this->length()));
         }
+
+        $this->setMax($pattern);
+    }
+
+    private function setMax($value)
+    {
+        $pattern = sprintf('^%s$', $value);
+        $dfa = $this->lexer->lex($pattern)->getDFA();
+        $this->max = $dfa->countSolutions();
     }
 }

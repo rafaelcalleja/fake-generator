@@ -12,8 +12,10 @@
         "homepage": "https://github.com/rafaelcalleja"
       }
     ],
+    "bin": ["bin/bootstrap.php"],
     "require": {
-      "fzaninotto/faker": "dev-master"
+      "fzaninotto/faker": "dev-master",
+      "kendall-hopkins/formal-theory": "dev-master"
     },
     "require-dev": {
       "phpunit/phpunit": "~4.0"
@@ -21,7 +23,8 @@
     "autoload": {
         "psr-4": {
 	        "FakeGenerator\\": "src/"
-        }
+        },
+        "files": [ "bin/bootstrap.php" ]
     },
     "autoload-dev": {
         "psr-4": {
